@@ -16,6 +16,15 @@
       <h1>{{ 'cart.general.title' | t }}</h1>
 
       <form action="/cart" method="post" id="cartform">
+
+        <script>
+        /* If the length of vardiscount is NOT 0 then add our sessionStorage value to the end of our Checkout link */
+        /* Link: http://stackoverflow.com/a/4704786 */
+		  if (sessionStorage.getItem("discount").length != 0) {
+          document.getElementById('cartform').action = "/cart?discount=" + sessionStorage.getItem("discount");
+        };
+        </script>
+        
         <table>
           <thead>
             <tr>
@@ -66,6 +75,7 @@
           <input type="submit" id="update-cart" class="btn" name="update" value="{{ 'cart.general.update' | t }}" />
         </div>
 
+        <!-- Custom code that hides the Paypal Express Checkout button on the cart page
         {% if additional_checkout_buttons or settings.display_cart_note %}
         <div class="row">
           {% if additional_checkout_buttons %}
@@ -83,10 +93,16 @@
           {% endif %}
         </div>
         {% endif %}
+        -->
+        
+        
         {% endif %}
-
+        
+        
+        
       </form>
     </div>
+    
 
     {% if cart.item_count == 0 %}
     {% unless settings.featured_products == blank or collections[settings.featured_products].empty? %}
