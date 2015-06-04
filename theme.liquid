@@ -47,12 +47,59 @@
   {{ 'customer_area.js'  | shopify_asset_url | script_tag }}
 
 
-  {% endif %}
+  {% endif %} 
+  
+  
+<!-- Function to grab the query string so we can use it as needed -->
+<!-- Link: https://ecommerce.shopify.com/c/shopify-discussion/t/auto-fill-discount-from-url-135012 -->
+<!-- Link: http://www.w3schools.com/html/html5_webstorage.asp -->
+<script>
+    
+/* Create variable urlParams */
+var urlParams;
+    
+/* Read the Query String Value from the URL */    
+/* Link: http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript */
+/* Notes: No clue how this regex stuff works. Probably magic.  */
+(window.onpopstate = function () {
+    var match,
+        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        query  = window.location.search.substring(1);
+
+    urlParams = {};
+    while (match = search.exec(query))
+       urlParams[decode(match[1])] = decode(match[2]);
+})();
+    
+/* If the value of the discount input field is blank, undefined or null then set the contents of localstorage discount to be the result of our Query String function above */    
+if ($("#discount_input").val() == ('' || undefined || null || 'undefined')) {
+    
+/* Set local storage variable "discount" to the result of our Query string function above */
+   sessionStorage.setItem("discount", urlParams["discount"]);
+}
+
+/* If the Query String doesn't match the current stored value for discount then clear the current stored value and replace it with the new one */
+/* Link: http://stackoverflow.com/questions/19844750/is-there-a-way-to-remove-all-sessionstorage-items-with-keys-that-match-a-certain */
+else if ($("#discount_input").val() != urlParams["discount"]) {
+   sessionStorage.removeItem("discount");
+   sessionStorage.setItem("discount", urlParams["discount"]);
+}    
+
+</script>
+<!-- End Grab Query String Function -->
+  
   
 </head>
 
 <body>
 
+<!-- Our hidden input that stores the discount code value -->
+<input id="discount_input" type="hidden" name="discount" value="">
+<!-- Set the value of our hidden input field #discount-input to the value of our sessionStorage "discount" Variable -->
+<script>document.getElementById("discount_input").value = sessionStorage.getItem("discount");</script>  
+  
   <!-- Begin toolbar -->
   <div class="toolbar-wrapper">
     <div class="toolbar clearfix">
@@ -227,7 +274,7 @@
         <!-- Begin copyright -->
         <div class="span12 tc copyright">
           {% assign current_year = 'now' | date: "%Y" %}
-          <p>{{ 'layout.copyright.copyright_html' | t: year: current_year, name: shop.name }} | {{ powered_by_link }} {% if settings.designed_by %}{% endif %} </p>
+          <p>{{ 'layout.copyright.copyright_html' | t: year: current_year, name: shop.name }} | Phone: 218-326-1794 | Address: 37829 Rock Haven Road, Cohasset, MN 55721</p>
           {% if shop.enabled_payment_types.size > 0 %}
           <ul class="credit-cards clearfix">
             {% for type in shop.enabled_payment_types %}
@@ -296,6 +343,6 @@
   </script>
 
   {% endif %}
-
+  
 </body>
 </html>
