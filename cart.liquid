@@ -1,0 +1,104 @@
+<div id="cart">
+
+  <!-- Begin empty cart -->
+  {% if cart.item_count == 0 %}
+  <div class="row">
+    <div class="span12 expanded-message">
+      <h2>{{ 'cart.general.empty' | t }}</h2>
+    </div>
+  </div>
+  <!-- End empty cart -->
+
+  <!-- Begin cart -->
+  {% else %}
+  <div class="row">
+    <div class="span12">
+      <h1>{{ 'cart.general.title' | t }}</h1>
+
+      <form action="/cart" method="post" id="cartform">
+        <table>
+          <thead>
+            <tr>
+              <th class="image">&nbsp;</th>
+              <th class="item">&nbsp;</th>
+              <th class="qty">{{ 'cart.general.quantity' | t }}</th>
+              <th class="price">{{ 'cart.general.price' | t }}</th>
+              <th class="remove">&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart.items %}
+            <tr>
+              <td class="image">
+                <div class="product_image">
+                  <a href="{{ item.url }}">
+                    <img src="{{ item | img_url: 'small' }}"  alt="{{ item.title | escape }}" />
+                  </a>
+                </div>
+              </td>
+              <td class="item">
+                <a href="{{ item.url }}">
+                  <strong>{{ item.product.title }}</strong>
+                  {% if item.product.variants.size > 1 %}
+                  <span class="variant_title">{{ item.variant.title }}</span>
+                  {% endif %}
+                </a>
+              </td>
+              <td class="qty">
+                <input type="text" size="4" name="updates[]" id="updates_{{ item.id }}" value="{{ item.quantity }}" onfocus="this.select();" class="tc item-quantity" />
+              </td>
+              <td class="price">{{ item.line_price | money }}</td>
+              <td class="remove"><a href="/cart/change?line={{ forloop.index }}&quantity=0" class="cart">{{ 'cart.general.remove' | t }}</a></td>
+            </tr>
+            {% endfor %}
+            <tr class="summary">
+              <td class="image">&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td class="price"><span class="total"><strong>{{ cart.total_price | money }}</strong></span></td>
+              <td>&nbsp;</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="buttons clearfix">
+          <input type="submit" id="checkout" class="btn" name="checkout" value="{{ 'cart.general.checkout' | t }}" />
+          <input type="submit" id="update-cart" class="btn" name="update" value="{{ 'cart.general.update' | t }}" />
+        </div>
+
+        {% if additional_checkout_buttons or settings.display_cart_note %}
+        <div class="row">
+          {% if additional_checkout_buttons %}
+          <div class="extra-checkout-buttons span6">
+            {{ content_for_additional_checkout_buttons }}
+          </div>
+          {% endif %}
+          {% if settings.display_cart_note %}
+          <div class="span6">
+            <div class="checkout-buttons clearfix">
+              <label for="note">{{ 'cart.general.instructions' | t }}</label>
+              <textarea id="note" name="note" rows="10" cols="50">{{ cart.note }}</textarea>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+        {% endif %}
+
+      </form>
+    </div>
+
+    {% if cart.item_count == 0 %}
+    {% unless settings.featured_products == blank or collections[settings.featured_products].empty? %}
+    <div class="cart-featured">
+      <h3 class="featured-cart-title">{{ 'cart.general.featured_items' | t }}</h3>
+      {% for product in collections[settings.featured_products].products limit: 4 %}
+	    {% include 'product-loop' %}
+  	  {% endfor %}
+    </div>
+    {% endunless %}
+    {% endif %}
+
+  </div>
+  <!-- End cart -->
+</div>

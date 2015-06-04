@@ -1,0 +1,301 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js ie6 oldie" lang="en"><![endif]-->
+<!--[if IE 7]><html class="no-js ie7 oldie" lang="en"><![endif]-->
+<!--[if IE 8]><html class="no-js ie8 oldie" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+
+  <link rel="shortcut icon" href="{{ 'favicon.png' | asset_url }}" type="image/png" />
+  <meta charset="utf-8">
+  <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+
+  <title>
+  {{ page_title }}{% if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif %}{% if current_page != 1 %} &ndash; Page {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+  </title>
+
+  {% if page_description %}
+  <meta name="description" content="{{ page_description | escape }}" />
+  {% endif %}
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="canonical" href="{{ canonical_url }}" />
+
+  {% include 'fb-open-graph-tags' %}
+  {% include 'twitter-cards' %}
+
+  {{ 'styles.scss.css' | asset_url | stylesheet_tag }}
+  {{ 'social/social-icons.css' | global_asset_url | stylesheet_tag }}
+  {{ '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css' | stylesheet_tag }}
+  {% if settings.google_header_font != "none" %}
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family={{ settings.google_header_font }}:300,400,700">
+  {% endif %}
+  {% if settings.google_nav_font != "none" %}
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family={{ settings.google_nav_font }}:300,400,700">
+  {% endif %}
+  {{ 'html5shiv.js' | asset_url | script_tag }}
+
+  {{ content_for_header }}
+
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+
+  {{ 'option_selection.js' | shopify_asset_url | script_tag }}
+  {{ 'api.jquery.js' | shopify_asset_url | script_tag }}
+
+  {% if template contains 'customers' %}
+  {{ 'shopify_common.js' | shopify_asset_url | script_tag }}
+  {{ 'customer_area.js'  | shopify_asset_url | script_tag }}
+
+
+  {% endif %}
+  
+</head>
+
+<body>
+
+  <!-- Begin toolbar -->
+  <div class="toolbar-wrapper">
+    <div class="toolbar clearfix">
+        <ul class="unstyled">
+          <li class="search-field fr">
+            <form class="search" action="/search">
+              <button type="submit" alt="Go" class="go"><i class="fa fa-search"></i></button>
+              <input type="text" name="q" class="search_box" placeholder="{{ 'general.search.placeholder' | t }}" value="{{ search.terms }}" />
+            </form>
+          </li>
+          <li class="fr"><a href="/cart" class="cart" title="{{ 'layout.cart.title' | t }}"><i class="fa fa-shopping-cart"></i>{{ 'layout.cart.title' | t }}: {{ 'layout.cart.items_with_count' | t: count: cart.item_count }} </a></li>
+          {% include 'customer-links' %}
+          {% if settings.top_bar_linklist != blank %}
+          {% for link in linklists[settings.top_bar_linklist].links %}
+          <li class="fr"><a href="{{ link.url }}" title="{{ link.title }}">{{ link.title }}</a></li>
+          {% endfor %}
+          {% endif %}
+        </ul>
+        <div id="menu-button" class="menu-icon"><i class="fa fa-bars"></i>{{ 'layout.menu.title' | t }}</div>
+    </div>
+  </div>
+  <!-- End toolbar -->
+
+  <!-- Begin Mobile Nav -->
+  <div class="row mobile-wrapper">
+    <nav class="mobile clearfix">
+      {% include 'mobile-menu' %}
+    </nav>
+  </div>
+  <!-- End Mobile Nav -->
+
+  <!-- Begin wrapper -->
+  <div id="transparency" class="wrapper">
+    <div class="row">
+      <!-- Begin right navigation -->
+      {% if settings.navigation_alignment == "right" %}
+      <div class="row" id="header">
+        <div class="span12 border-bottom">
+          <div class="span4 inner-left logo-wrapper">
+            <div class="logo">
+              {% if settings.use_logo %}
+              <a href="/"><img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name }}" /></a>
+              {% if template == 'index' %}
+              <h1 style="display:none"><a href="/">{{ shop.name }}</a></h1>
+              {% endif %}
+              {% else %}
+              <h1><a href="/">{{ shop.name }}</a></h1>
+              {% endif %}
+            </div>
+          </div>
+
+          <section id="nav">
+            <div class="span8 inner-right">
+              <nav class="main">
+                {% include 'site-nav' %}
+              </nav>
+            </div>
+          </section>
+        </div>
+      </div>
+      {% endif %}
+      <!-- End right navigation -->
+
+      <!-- Begin below navigation -->
+      {% if settings.navigation_alignment == "below" %}
+      <div class="span12 clearfix">
+        <div class="logo">
+          {% if settings.use_logo %}
+          <a href="/"><img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name }}" /></a>
+          {% if template == 'index' %}
+          <h1 style="display:none"><a href="/">{{ shop.name }}</a></h1>
+          {% endif %}
+          {% else %}
+          <h1><a href="/">{{ shop.name }}</a></h1>
+          {% endif %}
+        </div>
+      </div>
+
+      <section id="nav" class="row">
+        <div class="span12">
+          <nav class="main">
+            {% include 'site-nav' %}
+          </nav> <!-- /.main -->
+          <nav class="mobile clearfix">
+            {% include 'mobile-menu' %}
+          </nav> <!-- /.mobile -->
+        </div>
+      </section>
+      {% endif %}
+      <!-- End below navigation -->
+
+      <!-- Begin content-->
+      <section id="content" class="clearfix">
+        {{ content_for_layout }}
+      </section>
+      <!-- End content-->
+
+    </div>
+  </div>
+  <!-- End wrapper -->
+
+  <!-- Begin footer -->
+  <div class="footer-wrapper">
+    <footer>
+      <div class="row">
+
+        <div class="span12 full-border"></div>
+
+        {% assign blog_module_in_footer = false %}
+
+        <!-- Begin latest blog post -->
+        {% unless settings.footer_blog_post == blank or blogs[settings.footer_blog_post].empty? or blogs[settings.footer_blog_post].articles.size == 0 %}
+        {% assign article = blogs[settings.footer_blog_post].articles.first %}
+        {% assign blog_module_in_footer = true %}
+        <div class="span4">
+          <div class="p30">
+            <h4><a href="/blogs/{{ settings.footer_blog_post }}">{{ 'layout.footer_blog.title' | t }}</a></h4>
+            <p class="p10"><strong>{{ article.title | link_to: article.url }}</strong></p>
+            <p>{{ article.content | strip_html | truncatewords: 30 }}</p>
+          </div>
+        </div>
+        {% endunless %}
+        <!-- End latest blog post -->
+
+        <!-- Begin footer navigation -->
+        <div class="span4 footer-menu">
+          <h4>{{ 'layout.footer_navigation.title' | t }}</h4>
+          <ul class="unstyled">
+            {% for link in linklists[settings.footer_linklist].links %}
+              <li><a href="{{ link.url }}" title="{{ link.title }}">{{ link.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        <!-- End footer navigation -->
+
+        <!-- Begin newsletter/social -->
+        <div class="span4">
+
+          {% if settings.footer_display_newsletter %}
+          <div class="p30">
+            <h4>{{ 'layout.newsletter.title' | t }}</h4>
+            <form action="{{ settings.mailing_list_form_action }}" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" target="_blank">
+              <input type="email" value="" placeholder="{{ 'layout.newsletter.placeholder' | t }}" name="EMAIL" id="mail" /><input type="submit" class="btn newsletter" value="{{ 'layout.newsletter.submit' | t }}" name="subscribe" id="subscribe" />
+            </form>
+          </div>
+          {% endif %}
+
+          {% if blog_module_in_footer %}
+          <div class="clearfix">
+          {% if settings.enable_social_links %}
+            <h4>{{ 'layout.social.title' | t }}</h4>
+            {% include 'social-links' %}
+          {% endif %}
+          </div>
+          {% endif %}
+
+        </div>
+        <!-- End newsletter/social -->
+
+        {% unless blog_module_in_footer %}
+        <div class="span4">
+          <div class="clearfix">
+          {% if settings.enable_social_links %}
+            <h4>{{ 'layout.social.title' | t }}</h4>
+            {% include 'social-links' %}
+          {% endif %}
+          </div>
+
+        </div>
+        {% endunless %}
+
+        <!-- Begin copyright -->
+        <div class="span12 tc copyright">
+          {% assign current_year = 'now' | date: "%Y" %}
+          <p>{{ 'layout.copyright.copyright_html' | t: year: current_year, name: shop.name }} | {{ powered_by_link }} {% if settings.designed_by %}{% endif %} </p>
+          {% if shop.enabled_payment_types.size > 0 %}
+          <ul class="credit-cards clearfix">
+            {% for type in shop.enabled_payment_types %}
+            <li><img width="50" src="{{ type | payment_type_img_url }}" /></li>
+            {% endfor %}
+          </ul> <!-- /.credit-cards -->
+          {% endif %}
+        </div>
+        <!-- End copyright -->
+
+      </div>
+    </footer>
+  </div>
+  <!-- End footer -->
+
+  {% if settings.display_slideshow %}
+    {{ 'jquery.flexslider-min.js' | asset_url | script_tag }}
+  {% endif %}
+  {% if settings.enable_product_image_zoom %}
+    {{ 'jquery.zoom.js' | asset_url | script_tag }}
+  {% endif %}
+  {{ 'jquery.fancybox.js' | asset_url | script_tag }}
+  {{ 'scripts.js' | asset_url | script_tag }}
+  {{ 'social-buttons.js' | asset_url | script_tag }}
+  {% if template contains 'product' %}
+
+  <script>
+
+  var selectCallback = function(variant, selector) {
+
+    if (variant) {
+      if (variant.featured_image) {
+        var newImage = variant.featured_image;
+        var mainImageEl = $('.image.featured img')[0];
+        Shopify.Image.switchImage(newImage, mainImageEl, MinimalTheme.switchImage);
+      }
+      if (variant.price < variant.compare_at_price) {
+        jQuery('#price-preview').html(Shopify.formatMoney(variant.price, "{{ shop.money_format }}") + " <del>" + Shopify.formatMoney(variant.compare_at_price, "{{ shop.money_format }}") + "</del>");
+      }
+      else {
+        jQuery('#price-preview').html(Shopify.formatMoney(variant.price, "{{ shop.money_format }}"));
+      }
+      if (variant.available) {
+        jQuery('#add-to-cart').removeAttr('disabled').removeClass('disabled').val({{ 'products.general.add_html' | t | json }});
+      }
+      else {
+        jQuery('#add-to-cart').val({{ 'products.general.sold_out_html' | t | json }}).addClass('disabled').attr('disabled', 'disabled');
+      }
+    }
+    else {
+      jQuery('#add-to-cart').val({{ 'products.general.unavailable_html' | t | json }}).addClass('disabled').attr('disabled', 'disabled');
+    }
+
+  };
+
+  jQuery(document).ready(function($){
+    var optionSelectors = new Shopify.OptionSelectors("product-select", { product: {{ product | json }}, onVariantSelected: selectCallback, enableHistoryState: true });
+
+    // Add label if only one product option and it isn't 'Title'.
+    {% if product.options.size == 1 and product.options.first != 'Title' %}
+      $('.selector-wrapper:eq(0)').prepend('<label>{{ product.options.first }}</label>');
+    {% endif %}
+
+  });
+
+  </script>
+
+  {% endif %}
+
+</body>
+</html>
